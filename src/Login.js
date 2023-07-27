@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import swal from "sweetalert";
 import { Button, TextField, Link } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,13 @@ export default function Login(props) {
         password: "",
     });
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/dashboard");
+        }
+    }, [navigate]);
 
     const onChange = (event) => {
         event.persist();
@@ -147,4 +154,3 @@ export default function Login(props) {
         </div>
     );
 }
-
