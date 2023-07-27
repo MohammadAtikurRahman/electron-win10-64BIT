@@ -4,14 +4,25 @@ const path = require('path');
 const isDev = process.env.NODE_ENV !== 'production';
 
 let backendProcess;
+let win;
+let loadingScreen;
 
 function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 900,
     height: 620,
+    show: false, // Don't show the main window until it's ready
     webPreferences: {
       nodeIntegration: true,
     },
+  });
+
+  // When main window is ready, close the loading screen and show the main window
+  win.once('ready-to-show', () => {
+    if (loadingScreen) {
+      loadingScreen.close();
+    }
+    win.show();
   });
 
   win.on('close', (event) => {
@@ -39,6 +50,21 @@ function createWindow() {
   });
 }
 
+function createLoadingScreen() {
+  loadingScreen = new BrowserWindow({
+    width: 200,
+    height: 300,
+    frame: false,
+    transparent: true,
+  });
+
+  loadingScreen.loadURL(
+    isDev
+      ? 'http://localhost:3000/loading.html'
+      : `file://${path.join(__dirname, '../build/loading.html')}`
+  );
+}
+
 app.whenReady().then(() => {
   backendProcess = require('child_process').fork(
     path.join(__dirname, '../backend/server.js'),
@@ -47,6 +73,7 @@ app.whenReady().then(() => {
     }
   );
 
+  createLoadingScreen();
   createWindow();
 });
 
