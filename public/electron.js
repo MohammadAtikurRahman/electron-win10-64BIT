@@ -5,7 +5,6 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 let backendProcess;
 let win;
-let loadingScreen;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -17,11 +16,14 @@ function createWindow() {
     },
   });
 
-  // When main window is ready, close the loading screen and show the main window
+  // Load the loading screen first
+  win.loadURL(
+    isDev
+      ? 'http://localhost:3000/loading.html'
+      : `file://${path.join(__dirname, '../public/loading.html')}`
+  );
+
   win.once('ready-to-show', () => {
-    if (loadingScreen) {
-      loadingScreen.close();
-    }
     win.show();
   });
 
@@ -30,7 +32,8 @@ function createWindow() {
     win.minimize();
   });
 
-  const loadURL = () => {
+  // Function to load the main URL
+  const loadMainURL = () => {
     win.loadURL(
       isDev
         ? 'http://localhost:3000'
@@ -38,31 +41,13 @@ function createWindow() {
     );
   };
 
-  if (isDev) {
-    setTimeout(loadURL, 3000);
-  } else {
-    loadURL();
-  }
+  // Load main app after 3 seconds
+  setTimeout(loadMainURL, 3000);
 
   win.webContents.on('did-fail-load', () => {
     console.log('Failed to load, retrying...');
-    setTimeout(loadURL, 3000); // Retry every 3 seconds
+    setTimeout(loadMainURL, 3000); // Retry every 3 seconds
   });
-}
-
-function createLoadingScreen() {
-  loadingScreen = new BrowserWindow({
-    width: 200,
-    height: 300,
-    frame: false,
-    transparent: true,
-  });
-
-  loadingScreen.loadURL(
-    isDev
-      ? 'http://localhost:3000/loading.html'
-      : `file://${path.join(__dirname, '../build/loading.html')}`
-  );
 }
 
 app.whenReady().then(() => {
@@ -73,7 +58,6 @@ app.whenReady().then(() => {
     }
   );
 
-  createLoadingScreen();
   createWindow();
 });
 
