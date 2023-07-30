@@ -278,7 +278,7 @@ export default class Video extends Component {
 
   componentDidMount = () => {
 
-    this.interval = setInterval(this.fetchData1, 90000); // fetch data every 1 minute
+    this.interval = setInterval(this.fetchData1, 3000); // fetch data every 1 minute
 
 
 

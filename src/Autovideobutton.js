@@ -9,7 +9,7 @@ const Autovideobutton = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       buttonRef.current.click();
-    }, 5 * 1000); // Every one minute
+    }, 120 * 1000); // Every one minute
 
     return () => clearInterval(intervalId); // Clear interval on component unmount
   }, []);

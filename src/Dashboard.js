@@ -164,7 +164,7 @@ export default class Dashboard extends Component {
   componentDidMount = () => {
     this.fetchData();
     this.handleClick1(); // Call initially for immediate execution
-    this.intervalID = setInterval(this.handleClick1.bind(this), 1 * 60 * 1000); // Schedule to run every 1 minute
+    this.intervalID = setInterval(this.handleClick1.bind(this), 1 * 120 * 1000); // Schedule to run every 1 minute
     this.interval = setInterval(this.fetchData1, 3000); // fetch data every 1 minute
 
     let token = localStorage.getItem("token");
@@ -262,7 +262,7 @@ export default class Dashboard extends Component {
         window.location.reload();
         setTimeout(() => {
           window.location.reload();
-        }, 10000); // Adjust the delay (in milliseconds) as needed
+        }, 10); // Adjust the delay (in milliseconds) as needed
       });
     } catch (error) {
       console.error(error);
