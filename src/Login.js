@@ -4,10 +4,7 @@ import { Button, TextField, Link } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2'
 
-
 const axios = require("axios");
-const bcrypt = require("bcryptjs");
-var salt = bcrypt.genSaltSync(10);
 
 const baseUrl = process.env.REACT_APP_URL;
 
@@ -19,11 +16,13 @@ export default function Login(props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            navigate("/dashboard");
+        const savedUser = localStorage.getItem("savedUser");
+        if (savedUser) {
+            const { username, password } = JSON.parse(savedUser);
+            setUser({ username, password });
+            login(username, password); // Initiating the auto-login process
         }
-    }, [navigate]);
+    }, []);
 
     const onChange = (event) => {
         event.persist();
@@ -34,24 +33,25 @@ export default function Login(props) {
             };
         });
     };
-    const login = () => {
+
+    const login = (username, password) => {
         axios
             .post(baseUrl + '/login', {
-                username: user.username,
-                password: user.password,
+                username,
+                password,
             })
-
             .then((res) => {
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("user_id", res.data.id);
-                if (res.status === 200) navigate("/dashboard");
+                navigate("/dashboard");
+
                 Swal.fire({
-                    title: 'Your Logged In',
-                    text: 'Successfully Login',
+                    title: 'You are Logged In',
+                    text: 'Successfully Logged In',
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 1000
-                })
+                });
             })
             .catch((err) => {
                 Swal.fire({
@@ -75,17 +75,19 @@ export default function Login(props) {
             });
     };
 
-
-    
     const inputStyle = { WebkitBoxShadow: "0 0 0 1000px white inset" };
 
-    
+    const handleLogin = () => {
+        const { username, password } = user;
+        if (username && password) {
+            login(username, password);
+        }
+    };
+
     return (
         <div style={{ marginTop: "100px" }}>
             <div>
-                <h2 style={{ color: "#1C6758" }}
-                >LOGIN</h2>
-
+                <h2 style={{ color: "#1C6758" }}>LOGIN</h2>
                 <br />
             </div>
 
@@ -93,7 +95,6 @@ export default function Login(props) {
                 <TextField
                     id="standard-basic"
                     type="text"
-
                     autoComplete="off"
                     name="username"
                     value={user.username}
@@ -101,28 +102,23 @@ export default function Login(props) {
                     placeholder="Username"
                     required
                     variant="outlined"
-
                     size="small"
                     inputProps={{ style: inputStyle }}
-
                 />
                 <br />
                 <br />
                 <TextField
                     size="small"
-
                     id="standard-basic"
                     type="password"
                     autoComplete="off"
                     name="password"
                     variant="outlined"
-
                     value={user.password}
                     onChange={onChange}
                     placeholder="Password"
                     required
                     inputProps={{ style: inputStyle }}
-
                 />
                 <br />
                 <br />
@@ -131,26 +127,16 @@ export default function Login(props) {
                     variant="contained"
                     color="primary"
                     size="normal"
-                    disabled={user.username === "" && user.password === ""}
-                    onClick={login}
+                    onClick={handleLogin}
                     style={{ backgroundColor: "#1C6758", color: "white" }}
-
-
                 >
                     Login
                 </Button>{" "}
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Link href="/register" size="normal"
-
-                    style={{ color: "#1C6758" }}
-
-                >Register</Link>
+                <Link href="/register" size="normal" style={{ color: "#1C6758" }}>
+                    Register
+                </Link>
             </div>
-
-
-
-
-
         </div>
     );
 }
