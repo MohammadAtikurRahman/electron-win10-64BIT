@@ -397,18 +397,19 @@ async function savePcInfo(req, res) {
 
 
 
-async function saveVideoInfo(req, res) {
+  async function saveVideoInfo(req, res) {
     try {
-      // Get the user ID and array of video data from the request
       const userId = req.body.userId;
-      const videos = req.body.videos;  // "videos" is an array of video objects
-  
-      // Find the user document in the database
+      const videos = req.body.videos; 
+
       const user = await User.findOne({ userId: userId });
-  
+
       if (user) {
-        // Iterate over each video data and add it to the user's pc array
         for (let video of videos) {
+            // Check if the video_name field is present
+            if (!video.video_name) {
+                continue;  // Skip this iteration if video_name is not present
+            }
             user.pc.push({
               video_name: video.video_name,
               location: video.location,
@@ -420,24 +421,20 @@ async function saveVideoInfo(req, res) {
             });
         }
 
-        // Save the updated user document to the database
         await user.save();
   
-        // Send a success response
         res.status(200).json({
           success: true,
           message: 'video data saved successfully',
           user: user,
         });
       } else {
-        // If the user is not found, send an error response
         res.status(404).json({
           success: false,
           message: 'User not found',
         });
       }
     } catch (error) {
-      // If there's an error, send an error response
       res.status(500).json({
         success: false,
         message: 'An error occurred while saving the beneficiary data',
