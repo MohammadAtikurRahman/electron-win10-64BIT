@@ -12,7 +12,7 @@ const mongoose = require("mongoose").set("debug", true);
 const {router} = require("./routes.js");
 const {randomNumberNotInUserCollection} = require("./helpers/number");
 
-mongoose.connect(process.env.MONGO_URI ||'mongodb://127.0.0.1:27017/electron-app', {
+mongoose.connect(process.env.MONGO_URI ||'mongodb://127.0.0.1:27017/electron-test2', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGO_URI ||'mongodb://127.0.0.1:27017/electron-app
 
 
 const user = require("./model/user.js");
+
 
 app.use(express.json({limit: "50mb"}));
 
@@ -101,6 +102,7 @@ app.get("/user-details", (req, res) => {
 });
 
 /* user register api */
+
 app.post("/register", async (req, res) => {
     try {
         const userId = await randomNumberNotInUserCollection();
