@@ -265,6 +265,8 @@ export default class Video extends Component {
       console.error("Error:", error);
     }
   };
+
+
   convertToHoursAndMinutes(totalTime) {
     const hours = Math.floor(totalTime / 60);
     const minutes = totalTime % 60;
@@ -420,29 +422,29 @@ export default class Video extends Component {
    
 
 
-  sendData = async () => {
-    const userid = this.state.user ? this.state.user.userid : null;
+  // sendData = async () => {
+  //   const userid = this.state.user ? this.state.user.userid : null;
+  //    console.log("before pc id")
+  //   const data = {
+  //     userId: userid,
+  //     win_start: this.state.timeData.firstStartTime,
+  //     win_end: this.state.timeData.lastStartTime,
+  //     total_time: this.state.timeData.totalDuration,
+  //   };
 
-    const data = {
-      userId: userid,
-      win_start: this.state.timeData.firstStartTime,
-      win_end: this.state.timeData.lastStartTime,
-      total_time: this.state.timeData.totalDuration,
-    };
-
-    try {
-      const response = await axios.post("http://localhost:2000/pcinfo", data);
-      console.log(response.data);
-      this.setState({ dataSent: true }, () => {
-        window.location.reload();
-        setTimeout(() => {
-          window.location.reload();
-        }, 100); // Adjust the delay (in milliseconds) as needed
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //   try {
+  //     const response = await axios.post("http://localhost:2000/pcinfo", data);
+  //     console.log(response.data);
+  //     this.setState({ dataSent: true }, () => {
+  //       window.location.reload();
+  //       setTimeout(() => {
+  //         window.location.reload();
+  //       }, 100); // Adjust the delay (in milliseconds) as needed
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   getBeneficiaries = () => {
     this.setState({ loading: true });

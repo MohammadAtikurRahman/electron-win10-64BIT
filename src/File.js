@@ -98,7 +98,7 @@ const File = () => {
 
 
     fetchCSVData();
-    setTimeout(deleteCSVFile, 4000); // Delete CSV file after 3 seconds
+    setTimeout(deleteCSVFile, 8000); // Delete CSV file after 3 seconds
 
     axios
       .post("http://localhost:2000/videoinfo", {

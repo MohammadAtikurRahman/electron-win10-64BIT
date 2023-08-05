@@ -11,7 +11,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 620,
-    show: false, // Don't show the main window until it's ready
+    show: false,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -44,10 +44,13 @@ function createWindow() {
 
   mainWindow.webContents.on('did-fail-load', () => {
     console.log('Main window failed to load, retrying...');
-    setTimeout(loadMainURL, 3000); // Retry every 3 seconds
+    setTimeout(loadMainURL, 3000);
   });
 
-  // Create second window
+  setTimeout(createSecondWindow, 5000); // Delay second window creation by 5 seconds
+}
+
+function createSecondWindow() {
   secondWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -57,12 +60,11 @@ function createWindow() {
     },
   });
 
-  // Load the second window with your video content
   const loadSecondURL = () => {
     secondWindow.loadURL(
       isDev
         ? 'http://localhost:3000/video'
-      : `file://${path.join(__dirname, '../public/video.html')}`
+        : `file://${path.join(__dirname, '../public/video.html')}`
     );
   };
 
@@ -74,7 +76,7 @@ function createWindow() {
 
   secondWindow.webContents.on('did-fail-load', () => {
     console.log('Second window failed to load, retrying...');
-    setTimeout(loadSecondURL, 3000); // Retry every 3 seconds
+    setTimeout(loadSecondURL, 3000);
   });
 }
 
@@ -87,6 +89,13 @@ app.whenReady().then(() => {
   );
 
   createWindow();
+});
+
+app.on('before-quit', () => {
+  backendProcess.kill();
+  mainWindow = null;
+  secondWindow = null;
+  app.quit();
 });
 
 app.on('window-all-closed', () => {
