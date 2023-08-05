@@ -4,10 +4,11 @@ const path = require('path');
 const isDev = process.env.NODE_ENV !== 'production';
 
 let backendProcess;
-let win;
+let mainWindow;
+let secondWindow;
 
 function createWindow() {
-  win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 620,
     show: false, // Don't show the main window until it's ready
@@ -16,37 +17,64 @@ function createWindow() {
     },
   });
 
-  // Load the loading screen first
-  win.loadURL(
+  mainWindow.loadURL(
     isDev
       ? 'http://localhost:3000/loading.html'
       : `file://${path.join(__dirname, '../public/loading.html')}`
   );
 
-  win.once('ready-to-show', () => {
-    win.show();
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 
-  win.on('close', (event) => {
+  mainWindow.on('close', (event) => {
     event.preventDefault();
-    win.minimize();
+    mainWindow.minimize();
   });
 
-  // Function to load the main URL
   const loadMainURL = () => {
-    win.loadURL(
+    mainWindow.loadURL(
       isDev
         ? 'http://localhost:3000'
         : `file://${path.join(__dirname, '../build/index.html')}`
     );
   };
 
-  // Load main app after 3 seconds
   setTimeout(loadMainURL, 3000);
 
-  win.webContents.on('did-fail-load', () => {
-    console.log('Failed to load, retrying...');
+  mainWindow.webContents.on('did-fail-load', () => {
+    console.log('Main window failed to load, retrying...');
     setTimeout(loadMainURL, 3000); // Retry every 3 seconds
+  });
+
+  // Create second window
+  secondWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  });
+
+  // Load the second window with your video content
+  const loadSecondURL = () => {
+    secondWindow.loadURL(
+      isDev
+        ? 'http://localhost:3000/video'
+      : `file://${path.join(__dirname, '../public/video.html')}`
+    );
+  };
+
+  loadSecondURL();
+
+  secondWindow.on('closed', () => {
+    secondWindow = null;
+  });
+
+  secondWindow.webContents.on('did-fail-load', () => {
+    console.log('Second window failed to load, retrying...');
+    setTimeout(loadSecondURL, 3000); // Retry every 3 seconds
   });
 }
 

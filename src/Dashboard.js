@@ -345,7 +345,7 @@ export default class Dashboard extends Component {
   };
 
   fetchData1 = () => {
-    if (navigator.onLine) {
+    if (!navigator.onLine) {
       axios
         .get("http://localhost:2000/get-school")
         .then((response) => {
