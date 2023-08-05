@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Papa from "papaparse";
 import moment from "moment";
@@ -12,6 +12,7 @@ import {
   TableRow,
   Paper,
   Box,
+  CircularProgress,
 } from "@material-ui/core";
 
 const File = () => {
@@ -20,6 +21,8 @@ const File = () => {
   const [user, setUser] = useState(null);
   const [uniqueMonths, setUniqueMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const buttonRef = useRef(null);
 
   useEffect(() => {
     fetchCSVData();
@@ -31,6 +34,7 @@ const File = () => {
   }, []);
 
   const fetchCSVData = () => {
+    setIsLoading(true); // Set loading state
     fetch("/video_information.csv")
       .then((response) => {
         if (!response.ok) {
@@ -43,11 +47,13 @@ const File = () => {
           header: true,
           complete: (results) => {
             setVideoInfo(results.data);
+            setIsLoading(false); // Unset loading state
           },
         });
       })
       .catch((error) => {
         console.error("Error fetching CSV data:", error);
+        setIsLoading(false); // Unset loading state even in case of error
       });
   };
 
@@ -87,8 +93,12 @@ const File = () => {
   };
 
   const insertAndFetchData = () => {
+
+    setIsLoading(true);
+
+
     fetchCSVData();
-    setTimeout(deleteCSVFile, 3000); // Delete CSV file after 3 seconds
+    setTimeout(deleteCSVFile, 4000); // Delete CSV file after 3 seconds
 
     axios
       .post("http://localhost:2000/videoinfo", {
@@ -101,8 +111,20 @@ const File = () => {
       .catch((error) => {
         console.error("Error inserting data:", error);
       });
-  };
 
+
+      setTimeout(() => setIsLoading(false), 2000); // reset after 2 seconds
+
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      buttonRef.current.click();
+    }, 3000); // clicks every 2 seconds
+
+    return () => {
+      clearInterval(interval); // cleanup on unmount
+    };
+  }, []);
   const selectMonth = (month) => {
     if (selectedMonth === month) {
       setSelectedMonth("");
@@ -161,14 +183,15 @@ const File = () => {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        onClick={insertAndFetchData}
-      >
-        Load The Data
-      </Button>
+    <Button
+      variant="contained"
+      color={isLoading ? 'secondary' : 'primary'}
+      size="small"
+      onClick={insertAndFetchData}
+      ref={buttonRef}
+    >
+      {isLoading ? 'Loading...' : 'Load The Data'}
+    </Button>
       <br />
       <br />
       <br />

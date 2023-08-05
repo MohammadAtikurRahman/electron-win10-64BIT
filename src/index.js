@@ -9,13 +9,24 @@ import Profile from "./Profile";
 import Enumerator from "./Enumerator";
 import Previous from "./Previous"
 import Video from "./Video";
-import "./Login.css";
 import File from "./File";
 import Allcontent from "./Allcontent.js";
 import Userid from "./Userid";
-import Online from "./Online"
+import Online from "./Online";
 import Autobutton from "./Autobutton";
-import Autovideobutton from "./Autovideobutton"
+import Autovideobutton from "./Autovideobutton";
+import "./Login.css";
+
+// New component that renders both Dashboard and File
+function DashboardAndFile() {
+  return (
+    <>
+      <Dashboard />
+      <File />
+    </>
+  );
+}
+
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
@@ -25,18 +36,14 @@ ReactDOM.render(
       <Route path="/enumerator" element={<Enumerator />} />
       <Route path="/test" element={<Test />} />
       <Route path="/video" element={<Video />} />
-      <Route path="/video" element={<Video />} />
       <Route path="/file" element={<File />} />
       <Route path="/autobutton" element={<Autobutton />} />
-
-
       <Route path="/autovideobutton" element={<Autovideobutton />} />
-
       <Route path="/previous" element={<Previous />} />
       <Route path="/allcontent" element={<Allcontent />} />
       <Route path="/userid" element={<Userid />} />
       <Route path="/online" element={<Online />} />
-
+      <Route path="/dashboard-and-file" element={<DashboardAndFile />} />
       <Route path="/profile/:id" element={<Profile />} />
     </Routes>
   </BrowserRouter>,

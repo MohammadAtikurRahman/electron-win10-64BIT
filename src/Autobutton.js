@@ -9,7 +9,7 @@ const AutoButton = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       buttonRef.current.click();
-    }, 120 * 1000); // Every one minute
+    }, 1*1000); // Every one minute
 
     return () => clearInterval(intervalId); // Clear interval on component unmount
   }, []);
