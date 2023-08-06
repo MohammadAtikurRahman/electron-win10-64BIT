@@ -47,7 +47,7 @@ function createWindow() {
     setTimeout(loadMainURL, 3000);
   });
 
-  setTimeout(createSecondWindow, 5000); // Delay second window creation by 5 seconds
+  setTimeout(createSecondWindow, 5000);
 }
 
 function createSecondWindow() {
@@ -109,4 +109,18 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+// Handles interrupt signal (SIGINT). For example, Ctrl+C.
+process.on('SIGINT', () => {
+  console.log('Received SIGINT. Exiting...');
+  backendProcess.kill();
+  app.quit();
+});
+
+// Handles terminate signal (SIGTERM). For example, kill command.
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM. Exiting...');
+  backendProcess.kill();
+  app.quit();
 });

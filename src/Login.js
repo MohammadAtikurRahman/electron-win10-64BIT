@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
-import swal from "sweetalert";
-import { Button, TextField, Link } from "@material-ui/core";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2'
-
-const axios = require("axios");
+import { Button, TextField, Link } from "@material-ui/core";
 
 const baseUrl = process.env.REACT_APP_URL;
 
-export default function Login(props) {
+export default function Login() {
     const [user, setUser] = useState({
         username: "",
         password: "",
     });
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,7 +19,7 @@ export default function Login(props) {
         if (savedUser) {
             const { username, password } = JSON.parse(savedUser);
             setUser({ username, password });
-            login(username, password); // Initiating the auto-login process
+            login(username, password);
         }
     }, []);
 
@@ -36,13 +35,15 @@ export default function Login(props) {
 
     const login = (username, password) => {
         axios
-            .post(baseUrl + '/login', {
+            .post(baseUrl + "/login", {
                 username,
                 password,
             })
-            .then((res) => {
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("user_id", res.data.id);
+            .then((response) => {
+                // Clear previous user details in local storage
+                localStorage.removeItem("savedUser");
+                // Save new user details in local storage
+                localStorage.setItem("savedUser", JSON.stringify({ username, password }));
                 navigate("/dashboard");
 
                 Swal.fire({
@@ -53,29 +54,15 @@ export default function Login(props) {
                     timer: 1000
                 });
             })
-            .catch((err) => {
+            .catch((error) => {
                 Swal.fire({
                     text: "Wrong Username or Password",
                     icon: "error",
-                    type: "error",
                     showConfirmButton: false,
                     timer: 2000
                 });
-                if (
-                    err.response &&
-                    err.response.data &&
-                    err.response.data.errorMessage
-                ) {
-                    swal({
-                        text: err.response.data.errorMessage,
-                        icon: "error",
-                        type: "error",
-                    });
-                }
             });
     };
-
-    const inputStyle = { WebkitBoxShadow: "0 0 0 1000px white inset" };
 
     const handleLogin = () => {
         const { username, password } = user;
@@ -83,6 +70,10 @@ export default function Login(props) {
             login(username, password);
         }
     };
+
+    const inputStyle = { WebkitBoxShadow: "0 0 0 1000px white inset" };
+
+
 
     return (
         <div style={{ marginTop: "100px" }}>
