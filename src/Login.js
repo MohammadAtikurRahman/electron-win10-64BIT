@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import swal from "sweetalert";
 import { Button, TextField, Link } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2'
-
+import Swal from 'sweetalert2';
 const axios = require("axios");
 
 const baseUrl = process.env.REACT_APP_URL;
@@ -13,9 +12,11 @@ export default function Login(props) {
     username: "",
     password: "",
   });
+  const [hasInteracted, setHasInteracted] = useState(false);  // New State
   const navigate = useNavigate();
 
   const onChange = (event) => {
+    setHasInteracted(true);  // Set to true when user interacts
     event.persist();
     setUser((user) => {
       return {
@@ -34,8 +35,6 @@ export default function Login(props) {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user_id", res.data.id);
-        
-        // Save username and password to local storage
         localStorage.setItem("username", user.username);
         localStorage.setItem("password", user.password);
 
@@ -70,14 +69,12 @@ export default function Login(props) {
       });
   };
 
-  // useEffect to watch user state change
   useEffect(() => {
-    if (user.username !== "" && user.password !== "") {
+    if (!hasInteracted && user.username !== "" && user.password !== "") {
       login();
     }
   }, [user]);
 
-  // Function to automatically log in the user
   const autoLogin = () => {
     let savedUsername = localStorage.getItem("username");
     let savedPassword = localStorage.getItem("password");
@@ -87,7 +84,6 @@ export default function Login(props) {
     }
   };
 
-  // Call autoLogin when the component mounts
   useEffect(() => {
     autoLogin();
   }, []);
@@ -100,7 +96,6 @@ export default function Login(props) {
         <h2 style={{ color: "#1C6758" }}>LOGIN</h2>
         <br />
       </div>
-
       <div>
         <TextField
           id="standard-basic"
@@ -137,7 +132,7 @@ export default function Login(props) {
           variant="contained"
           color="primary"
           size="normal"
-          disabled={user.username === "" && user.password === ""}
+          disabled={user.username === "" || user.password === ""}
           onClick={login}
           style={{ backgroundColor: "#1C6758", color: "white" }}
         >
