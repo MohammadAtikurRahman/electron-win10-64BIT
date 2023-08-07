@@ -4,79 +4,49 @@ const path = require('path');
 const isDev = process.env.NODE_ENV !== 'production';
 
 let backendProcess;
-let mainWindow;
-let secondWindow;
+let win;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  win = new BrowserWindow({
     width: 900,
     height: 620,
-    show: false,
+    show: false, // Don't show the main window until it's ready
     webPreferences: {
       nodeIntegration: true,
     },
   });
 
-  mainWindow.loadURL(
+  // Load the loading screen first
+  win.loadURL(
     isDev
       ? 'http://localhost:3000/loading.html'
       : `file://${path.join(__dirname, '../public/loading.html')}`
   );
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+  win.once('ready-to-show', () => {
+    win.show();
   });
 
-  mainWindow.on('close', (event) => {
+  win.on('close', (event) => {
     event.preventDefault();
-    mainWindow.minimize();
+    win.minimize();
   });
 
+  // Function to load the main URL
   const loadMainURL = () => {
-    mainWindow.loadURL(
+    win.loadURL(
       isDev
         ? 'http://localhost:3000'
         : `file://${path.join(__dirname, '../build/index.html')}`
     );
   };
 
+  // Load main app after 3 seconds
   setTimeout(loadMainURL, 3000);
 
-  mainWindow.webContents.on('did-fail-load', () => {
-    console.log('Main window failed to load, retrying...');
-    setTimeout(loadMainURL, 3000);
-  });
-
-  setTimeout(createSecondWindow, 5000);
-}
-
-function createSecondWindow() {
-  secondWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    show: false,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  });
-
-  const loadSecondURL = () => {
-    secondWindow.loadURL(
-      isDev
-        ? 'http://localhost:3000/video'
-        : `file://${path.join(__dirname, '../public/video.html')}`
-    );
-  };
-
-  loadSecondURL();
-
-  secondWindow.on('closed', () => {
-    secondWindow = null;
-  });
-
-  secondWindow.webContents.on('did-fail-load', () => {
-    console.log('Second window failed to load, retrying...');
-    setTimeout(loadSecondURL, 3000);
+  win.webContents.on('did-fail-load', () => {
+    console.log('Failed to load, retrying...');
+    setTimeout(loadMainURL, 3000); // Retry every 3 seconds
   });
 }
 
@@ -91,13 +61,6 @@ app.whenReady().then(() => {
   createWindow();
 });
 
-app.on('before-quit', () => {
-  backendProcess.kill();
-  mainWindow = null;
-  secondWindow = null;
-  app.quit();
-});
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     backendProcess.kill();
@@ -109,18 +72,4 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
-});
-
-// Handles interrupt signal (SIGINT). For example, Ctrl+C.
-process.on('SIGINT', () => {
-  console.log('Received SIGINT. Exiting...');
-  backendProcess.kill();
-  app.quit();
-});
-
-// Handles terminate signal (SIGTERM). For example, kill command.
-process.on('SIGTERM', () => {
-  console.log('Received SIGTERM. Exiting...');
-  backendProcess.kill();
-  app.quit();
 });
