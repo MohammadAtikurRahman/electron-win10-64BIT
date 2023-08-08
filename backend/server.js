@@ -12,7 +12,7 @@ const mongoose = require("mongoose").set("debug", true);
 const {router} = require("./routes.js");
 const {randomNumberNotInUserCollection} = require("./helpers/number");
 
-mongoose.connect(process.env.MONGO_URI ||'mongodb://127.0.0.1:27017/dlab-database', {
+mongoose.connect(process.env.MONGO_URI ||'mongodb://127.0.0.1:27017/dlab-desktop', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

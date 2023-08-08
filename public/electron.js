@@ -46,17 +46,8 @@ function createWindow() {
 
   win.webContents.on('did-fail-load', () => {
     console.log('Failed to load, retrying...');
-  
-    // Load the loading screen again
-    win.loadURL(
-      isDev
-        ? 'http://localhost:3000/loading.html'
-        : `file://${path.join(__dirname, '../public/loading.html')}`
-    );
-  
-    setTimeout(loadMainURL, 3000); // Retry loading the main URL after 3 seconds
+    setTimeout(loadMainURL, 3000); // Retry every 3 seconds
   });
-  
 }
 
 app.whenReady().then(() => {
