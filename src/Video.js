@@ -125,7 +125,7 @@ export default class Video extends Component {
       });
   };
 
-   downloadCSV = () => {
+  downloadCSV = () => {
     function createCombinedRow(bData, pcData = {}) {
       // Combine beneficiary and pc data into a single row
       const userName = `"${(bData.m_nm || "").replace(/"/g, '""')}"`;
@@ -135,12 +135,18 @@ export default class Video extends Component {
       const labId = bData.f_nm;
       const videoName = `"${(pcData.video_name || "").replace(/"/g, '""')}"`;
       const location = `"${(pcData.location || "").replace(/"/g, '""')}"`;
-      const playerTimeStart = `"${(pcData.pl_start || "").replace(/"/g, '""')}"`;
-      const pcTimeStart = `"${(pcData.start_date_time || "").replace(/"/g, '""')}"`;
+      const playerTimeStart = `"${(pcData.pl_start || "").replace(
+        /"/g,
+        '""'
+      )}"`;
+      const pcTimeStart = `"${(pcData.start_date_time || "").replace(
+        /"/g,
+        '""'
+      )}"`;
       const playerEndTime = `"${(pcData.pl_end || "").replace(/"/g, '""')}"`;
       const pcEndTime = `"${(pcData.end_date_time || "").replace(/"/g, '""')}"`;
       const totalTime = `"${(pcData.duration || "").replace(/"/g, '""')}"`;
-  
+
       return [
         videoName,
         location,
@@ -156,20 +162,20 @@ export default class Video extends Component {
         labId,
       ];
     }
-  
+
     axios
       .get("http://localhost:2000/get-testscore")
       .then((response) => {
         const { data } = response;
         let csvContent = "";
-  
+
         // Map beneficiaries with pc data
         const combinedData = data.beneficiary.flatMap((bData) => {
           // Find matching pc data for each beneficiary
           const matchingPcData = data.pc.filter(
             (pcData) => bData.id === pcData.beneficiaryId
           );
-  
+
           // If matching pc data is found, create a row for each
           if (matchingPcData.length) {
             return matchingPcData.map((pcData) =>
@@ -180,7 +186,7 @@ export default class Video extends Component {
             return createCombinedRow(bData);
           }
         });
-  
+
         // Combine headers
         const headers = [
           "Video Name",
@@ -197,30 +203,28 @@ export default class Video extends Component {
           "Lab ID",
         ];
         csvContent += headers.join(",") + "\r\n";
-  
+
         // Sort the combined data by start_date_time in descending order
-        combinedData.sort((a, b) =>
-          new Date(b[3]) - new Date(a[3])
-        );
-  
+        combinedData.sort((a, b) => new Date(b[3]) - new Date(a[3]));
+
         // Add the rows to csvContent
         combinedData.forEach((row) => {
           csvContent += row.join(",") + "\r\n";
         });
-  
+
         const schoolName = data.beneficiary[0].name;
         const eiin = data.beneficiary[0].beneficiaryId;
         const pc_id = data.beneficiary[0].f_nm;
         const lab_id = data.beneficiary[0].u_nm;
-  
+
         const fileName = `vid_all-${schoolName}-${lab_id}-${pc_id}.csv`;
-  
+
         // Create Blob with csvContent and BOM
         const blob = new Blob(["\uFEFF" + csvContent], {
           type: "text/csv;charset=utf-8;",
         });
         const url = URL.createObjectURL(blob);
-  
+
         // Create a download link
         const link = document.createElement("a");
         link.setAttribute("href", url);
@@ -233,8 +237,6 @@ export default class Video extends Component {
         console.error("Error downloading CSV:", error);
       });
   };
-  
-
 
   handleClose() {
     this.setState({ anchorEl: null });
@@ -266,7 +268,6 @@ export default class Video extends Component {
     }
   };
 
-
   convertToHoursAndMinutes(totalTime) {
     const hours = Math.floor(totalTime / 60);
     const minutes = totalTime % 60;
@@ -279,10 +280,7 @@ export default class Video extends Component {
   }
 
   componentDidMount = () => {
-
     this.interval = setInterval(this.fetchData1, 3000); // fetch data every 1 minute
-
-
 
     let token = localStorage.getItem("token");
     if (!token) {
@@ -360,67 +358,52 @@ export default class Video extends Component {
     if (this.interval) {
       clearInterval(this.interval);
     }
- 
   }
 
-
-  fetchData1 = () => {  
-
+  fetchData1 = () => {
     if (navigator.onLine) {
+      axios
+        .get("http://localhost:2000/get-testscore")
+        .then((response) => {
+          const { data } = response;
+          console.log(data); // Log data to console
 
-    axios
-   .get("http://localhost:2000/get-testscore")
-   .then((response) => {
-     const { data } = response;
-     console.log(data); // Log data to console
-   
-     const videoDataArray = data.pc.map(video => ({
-       pc_name: video.pc_name,
-       eiin: data.beneficiary[0].beneficiaryId,
-       school_name: data.beneficiary[0].name,
-       pc_id: data.beneficiary[0].u_nm,
-       lab_id: data.beneficiary[0].f_nm,
-       video_name: video.video_name,
-       location: video.location,
-       pl_start: video.pl_start,
-       start_date_time: video.start_date_time,
-       pl_end: video.pl_end,
-       end_date_time: video.end_date_time,
-       duration: video.duration,
-     }));
-   
-     console.log(videoDataArray); // Log transformed data to console
-   
-     // Make a POST request with the transformed data
-     axios
-       .post("http://172.104.191.159:2002/insert-video-data", videoDataArray)
-       .then((response) => {
-         console.log("Data inserted successfully:", response.data);
-         // Handle the response as needed
-       })
-       .catch((error) => {
-         console.error("Error inserting data:", error);
-       });
-   })
-   .catch((error) => {
-     console.error("Error fetching data:", error);
-   });
+          const videoDataArray = data.pc.map((video) => ({
+            pc_name: video.pc_name,
+            eiin: data.beneficiary[0].beneficiaryId,
+            school_name: data.beneficiary[0].name,
+            pc_id: data.beneficiary[0].u_nm,
+            lab_id: data.beneficiary[0].f_nm,
+            video_name: video.video_name,
+            location: video.location,
+            pl_start: video.pl_start,
+            start_date_time: video.start_date_time,
+            pl_end: video.pl_end,
+            end_date_time: video.end_date_time,
+            duration: video.duration,
+          }));
 
+          console.log(videoDataArray); // Log transformed data to console
 
-
-
-
-  }
-
-
-
-
-
-
-
-   };
-   
-
+          // Make a POST request with the transformed data
+          axios
+            .post(
+              "http://172.104.191.159:2002/insert-video-data",
+              videoDataArray
+            )
+            .then((response) => {
+              console.log("Data inserted successfully:", response.data);
+              // Handle the response as needed
+            })
+            .catch((error) => {
+              console.error("Error inserting data:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
+  };
 
   // sendData = async () => {
   //   const userid = this.state.user ? this.state.user.userid : null;
@@ -571,7 +554,7 @@ export default class Video extends Component {
         )}
         <AppBar position="static" style={{ backgroundColor: "#1F8A70" }}>
           <Toolbar>
-            <div style={{ display: "flex"}}>
+            <div style={{ display: "flex" }}>
               {/* <Button
                 variant="contained"
                 color="primary"
@@ -582,8 +565,7 @@ export default class Video extends Component {
               </Button> */}
               <Autovideobutton />
               &nbsp; &nbsp;
-              <h5 style={{ paddingTop: "10px"}}>D-Lab Video Dashboard</h5>
-
+              <h5 style={{ paddingTop: "10px" }}>D-Lab Video Dashboard</h5>
             </div>
 
             <div style={{ flexGrow: 1 }} />
@@ -601,7 +583,7 @@ export default class Video extends Component {
                   style={{ zIndex: "9999" }}
                   onClick={this.downloadCSV}
                 >
-                 All Video Download
+                  All Video Download
                 </Button>
               </div>
             </div>
@@ -681,21 +663,16 @@ export default class Video extends Component {
           </div>
         </div>
 
-        
         <AppBar
           position="static"
           style={{ backgroundColor: "#ffff", marginTop: "22%" }}
           elevation={0}
         >
           <Toolbar>
-            
-
             <div style={{ flexGrow: 1 }} />
             <div style={{ flexGrow: -2 }}>
               <div style={{ display: "flex", alignItems: "center" }}>
-              
                 &nbsp;
-             
                 {/* <Button
                   className="button_style"
                   variant="contained"

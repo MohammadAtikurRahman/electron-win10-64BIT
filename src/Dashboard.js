@@ -21,6 +21,7 @@ import { searchBeneficiary } from "./utils/search";
 import { EditBeneficiary } from "./EditBeneficiary";
 import { AddBeneficiary } from "./AddBeneficiary";
 import Previous from "./Previous";
+import Video from "./Video";
 
 import Online from "./Online";
 
@@ -269,8 +270,6 @@ export default class Dashboard extends Component {
     }
   };
 
-
-
   getBeneficiaries = () => {
     this.setState({ loading: true });
     axios
@@ -458,7 +457,6 @@ export default class Dashboard extends Component {
         const pc_id = data.beneficiary[0].f_nm;
         const lab_id = data.beneficiary[0].u_nm;
 
-
         const fileName = `pc_${schoolName}-${lab_id}-${pc_id}.csv`;
 
         // Create a download link
@@ -564,11 +562,7 @@ export default class Dashboard extends Component {
           <Toolbar>
             {this.state?.filteredBeneficiary?.reverse().map((row, index) => (
               <div key={index} style={{ display: "flex" }}>
-              
-              
-                  <Autobutton />
-
-
+                <Autobutton />
                 &nbsp; &nbsp;
                 <Button variant="contained" color="primary">
                   {" "}
@@ -756,6 +750,13 @@ export default class Dashboard extends Component {
               color="primary"
             />
           </TableContainer>
+
+          <div>
+            <div style={{ display: "none" }}>
+              <Video />
+            </div>
+            {/* other components */}
+          </div>
         </div>
 
         {/* <AppBar
