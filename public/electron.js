@@ -73,3 +73,29 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+// Function to handle app shutdown
+function shutdown() {
+  if (backendProcess) {
+    backendProcess.kill();
+  }
+  app.quit();
+}
+
+// This event is emitted when Electron is about to quit.
+app.on('before-quit', () => shutdown());
+
+// This event is emitted once, when Electron is quitting.
+app.on('will-quit', () => shutdown());
+
+// Handles interrupt signal (SIGINT). For example, Ctrl+C.
+process.on('SIGINT', () => {
+  console.log('Received SIGINT. Exiting...');
+  shutdown();
+});
+
+// Handles terminate signal (SIGTERM). For example, kill command.
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM. Exiting...');
+  shutdown();
+});
