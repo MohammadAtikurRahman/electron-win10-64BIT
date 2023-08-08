@@ -640,7 +640,7 @@ export default class Video extends Component {
                     <b> PC ID: {row.f_nm} </b>
                   </Button>
                   &nbsp; &nbsp;
-                  <Button
+                  {/* <Button
                     className="button_style"
                     variant="contained"
                     color="primary"
@@ -649,7 +649,7 @@ export default class Video extends Component {
                     onClick={() => this.handleProductEditOpen(row)}
                   >
                     Edit
-                  </Button>
+                  </Button> */}
                   {/* <BeneficiaryDelete row={row} /> */}
                   &nbsp; &nbsp;
                 </div>

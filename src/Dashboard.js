@@ -457,7 +457,7 @@ export default class Dashboard extends Component {
         const pc_id = data.beneficiary[0].f_nm;
         const lab_id = data.beneficiary[0].u_nm;
 
-        const fileName = `pc_${schoolName}-${lab_id}-${pc_id}.csv`;
+        const fileName = `all_pc_${schoolName}-${lab_id}-${pc_id}.csv`;
 
         // Create a download link
         const encodedUri = encodeURI(csvContent);
@@ -589,7 +589,7 @@ export default class Dashboard extends Component {
                   size="small"
                   onClick={this.downloadCSV}
                 >
-                  <b> Download </b>
+                  <b>All Download </b>
                 </Button>
                 {this.state.jsonData && (
                   <pre>{JSON.stringify(this.state.jsonData, null, 2)}</pre>
@@ -707,34 +707,54 @@ export default class Dashboard extends Component {
                         <b>
                           {new Date(lastData.earliestStart).toLocaleDateString(
                             "en-GB"
-                          )}
+                          ) === "01/01/1970"
+                            ? "Processing"
+                            : new Date(
+                                lastData.earliestStart
+                              ).toLocaleDateString("en-GB")}
                         </b>
                       </TableCell>
                       <TableCell align="center">
                         <b>
-                          {new Date(lastData.earliestStart).toLocaleTimeString(
-                            "en-GB",
-                            { hour12: true }
-                          )}
+                          {new Date(lastData.earliestStart).toLocaleDateString(
+                            "en-GB"
+                          ) === "01/01/1970"
+                            ? "Processing"
+                            : new Date(
+                                lastData.earliestStart
+                              ).toLocaleTimeString("en-GB", { hour12: true })}
                         </b>
                       </TableCell>
                       <TableCell align="center">
                         <b>
                           {new Date(lastData.latestEnd).toLocaleDateString(
                             "en-GB"
-                          )}
+                          ) === "01/01/1970"
+                            ? "Processing"
+                            : new Date(lastData.latestEnd).toLocaleDateString(
+                                "en-GB"
+                              )}
                         </b>
                       </TableCell>
                       <TableCell align="center">
                         <b>
-                          {new Date(lastData.latestEnd).toLocaleTimeString(
-                            "en-GB",
-                            { hour12: true }
-                          )}
+                          {new Date(lastData.latestEnd).toLocaleDateString(
+                            "en-GB"
+                          ) === "01/01/1970"
+                            ? "Processing"
+                            : new Date(lastData.latestEnd).toLocaleTimeString(
+                                "en-GB",
+                                { hour12: true }
+                              )}
                         </b>
                       </TableCell>
+
                       <TableCell align="center" component="th" scope="row">
-                        <b>{this.convertToHoursAndMinutes(ttime.total_time)}</b>
+                        <b>
+                          {isNaN(ttime.total_time)
+                            ? "Processing"
+                            : this.convertToHoursAndMinutes(ttime.total_time)}
+                        </b>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -758,38 +778,6 @@ export default class Dashboard extends Component {
             {/* other components */}
           </div>
         </div>
-
-        {/* <AppBar
-          position="static"
-          style={{ backgroundColor: "#ffff", marginTop: "22%" }}
-          elevation={0}
-        >
-          <Toolbar>
-            <div style={{ flexGrow: 1 }} />
-            <div style={{ flexGrow: -2 }}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                &nbsp;
-                <Button
-                  className="button_style"
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={this.logOut}
-                >
-                  <MaterialLink
-                    style={{
-                      textDecoration: "none",
-                      color: "white",
-                    }}
-                    href="/"
-                  >
-                    Logout
-                  </MaterialLink>
-                </Button>
-              </div>
-            </div>
-          </Toolbar>
-        </AppBar> */}
       </div>
     );
   }

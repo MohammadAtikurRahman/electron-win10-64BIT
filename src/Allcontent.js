@@ -555,7 +555,7 @@ export default class Allcontent extends Component {
                     <b> PC ID: {row.f_nm} </b>
                   </Button>
                   &nbsp; &nbsp;
-                  <Button
+                  {/* <Button
                     className="button_style"
                     variant="contained"
                     color="primary"
@@ -563,7 +563,7 @@ export default class Allcontent extends Component {
                     onClick={() => this.handleProductEditOpen(row)}
                   >
                     Edit
-                  </Button>
+                  </Button> */}
                   {/* <BeneficiaryDelete row={row} /> */}
                   &nbsp; &nbsp;
                 </div>
